@@ -2,7 +2,7 @@ import functools
 import re
 import warnings
 from collections import defaultdict
-from typing import Callable, Dict, Optional, Type, Union
+from typing import Callable, Dict, Mapping, Optional, Type, Union
 
 import fastjsonschema
 import yaml
@@ -70,6 +70,7 @@ class SwaggerDocs(Swagger):
         description: Optional[str] = None,
         components: Optional[str] = None,
         security: Optional[str] = None,
+        spec_extra: Optional[Mapping] = None,
         swagger_ui_settings: Optional[SwaggerUiSettings] = None,
         redoc_ui_settings: Optional[ReDocUiSettings] = None,
         rapidoc_ui_settings: Optional[RapiDocUiSettings] = None,
@@ -114,6 +115,9 @@ class SwaggerDocs(Swagger):
         if security:
             with open(security) as f:
                 spec.update(yaml.safe_load(f))
+        
+        if spec_extra:
+            spec.update(spec_extra)
 
         super().__init__(
             app,
