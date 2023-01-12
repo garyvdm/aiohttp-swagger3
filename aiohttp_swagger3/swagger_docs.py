@@ -137,14 +137,24 @@ class SwaggerDocs(Swagger):
         *,
         is_method: bool,
         validate: bool,
+        spec: Union[str, Mapping, None] = None
     ) -> _SwaggerHandler:
-        if not handler.__doc__ or "---" not in handler.__doc__:
+        method_spec = {}
+        if handler.__doc__ and "---" in handler.__doc__:
+            *_, doc_spec = handler.__doc__.split("---")
+            method_spec = yaml.safe_load(doc_spec)
+            path = _PATH_VAR_REGEX.sub(r"{\1}\2", path)
+            if self.spec["paths"].get(path, {}).get(method) is not None:
+                raise Exception(f"{method} {path} already exists")
+        
+        if isinstance(spec, str):
+            spec = yaml.safe_load(spec)
+        
+        if spec:
+            method_spec.update(spec)
+        
+        if not method_spec:
             return handler
-        *_, spec = handler.__doc__.split("---")
-        method_spec = yaml.safe_load(spec)
-        path = _PATH_VAR_REGEX.sub(r"{\1}\2", path)
-        if self.spec["paths"].get(path, {}).get(method) is not None:
-            raise Exception(f"{method} {path} already exists")
 
         self.spec["paths"][path][method] = method_spec
         try:
@@ -168,6 +178,7 @@ class SwaggerDocs(Swagger):
         name: Optional[str] = None,
         expect_handler: Optional[ExpectHandler] = None,
         validate: Optional[bool] = None,
+        spec: Union[str, Mapping, None] = None
     ) -> web.AbstractRoute:
         if validate is None:
             need_validation: bool = self.validate
@@ -187,6 +198,7 @@ class SwaggerDocs(Swagger):
                             handler_,
                             is_method=True,
                             validate=need_validation,
+                            spec=spec,
                         ),
                     )
         else:
@@ -205,6 +217,7 @@ class SwaggerDocs(Swagger):
                         handler,
                         is_method=False,
                         validate=need_validation,
+                        spec=spec,
                     )
             else:
                 handler = self._wrap_handler(
@@ -213,6 +226,7 @@ class SwaggerDocs(Swagger):
                     handler,
                     is_method=False,
                     validate=need_validation,
+                    spec=spec,
                 )
 
         return self._app.router.add_route(method, path, handler, name=name, expect_handler=expect_handler)
