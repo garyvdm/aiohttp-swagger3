@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.8.0 (04-02-2023)
+------------------
+
+- Added aiohttp 3.9.x support
+- Dropped aiohttp 3.6.x and 3.7.x
+- Dropped python 3.7
+
+0.7.4 (04-02-2023)
+------------------
+
+- Replaced strict_rfc3339 with rfc3339-validator (#118)
+- Use request.content_type instead of cgi.parse_header (#110)
+- added python 3.11 support
+- bump rapidoc ui to 9.3.4
+- bump redoc ui to v2.0.0
+- bump swagger ui to 4.15.5
+
 0.7.2 (06-04-2022)
 ------------------
 
