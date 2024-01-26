@@ -113,7 +113,7 @@ class SwaggerDocs(Swagger):
         if security:
             with open(security) as f:
                 spec.update(yaml.safe_load(f))
-        
+
         if spec_extra:
             spec.update(spec_extra)
 
@@ -135,7 +135,7 @@ class SwaggerDocs(Swagger):
         *,
         is_method: bool,
         validate: bool,
-        spec: Union[str, Mapping, None] = None
+        spec: Union[str, Mapping, None] = None,
     ) -> _SwaggerHandler:
         method_spec = {}
         if handler.__doc__ and "---" in handler.__doc__:
@@ -144,13 +144,13 @@ class SwaggerDocs(Swagger):
             path = _PATH_VAR_REGEX.sub(r"{\1}\2", path)
             if self.spec["paths"].get(path, {}).get(method) is not None:
                 raise Exception(f"{method} {path} already exists")
-        
+
         if isinstance(spec, str):
             spec = yaml.safe_load(spec)
-        
+
         if spec:
             method_spec.update(spec)
-        
+
         if not method_spec:
             return handler
 
@@ -176,7 +176,7 @@ class SwaggerDocs(Swagger):
         name: Optional[str] = None,
         expect_handler: Optional[ExpectHandler] = None,
         validate: Optional[bool] = None,
-        spec: Union[str, Mapping, None] = None
+        spec: Union[str, Mapping, None] = None,
     ) -> web.AbstractRoute:
         if validate is None:
             need_validation: bool = self.validate
