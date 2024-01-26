@@ -148,7 +148,7 @@ class SwaggerDocs(Swagger):
         if isinstance(spec, str):
             spec = yaml.safe_load(spec)
 
-        if spec:
+        if isinstance(spec, Mapping):
             method_spec.update(spec)
 
         if not method_spec:
